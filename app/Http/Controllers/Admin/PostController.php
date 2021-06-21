@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Post;
+use App\Category;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -17,9 +18,10 @@ class PostController extends Controller
      */
     public function index()
     {
+        $categories = Category::all();
         $posts = Post::all();
 
-        return view('admin.posts.index', compact('posts'));
+        return view('admin.posts.index', compact('posts', 'categories'));
     }
 
     /**
@@ -29,7 +31,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::all();
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -44,6 +47,7 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|unique:posts',
             'content' => 'required',
+            'category_id' => 'nullable|exists:categories,id'
         ]);
 
 
@@ -85,8 +89,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $categories = Category::all();
         if($post){
-            return view('admin.posts.edit', compact('post'));
+            return view('admin.posts.edit', compact('post', 'categories'));
         }
         abort(404);
     }
@@ -114,6 +119,7 @@ class PostController extends Controller
                 Rule::unique('posts')->ignore($id),
             ],
             'content' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $post->update($data);
