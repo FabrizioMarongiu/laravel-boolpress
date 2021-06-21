@@ -69,6 +69,8 @@
                 <div class="top-right links">
                     @auth
                         <a href="{{ url('/home') }}">Home</a>
+                        <a href="{{ route('admin.posts.index') }}">Index</a>
+
                     @else
                         <a href="{{ route('login') }}">Login</a>
 

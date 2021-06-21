@@ -38,6 +38,12 @@
                         </a>
 
                     </ul>
+                    <ul class="navbar-nav mr-auto">
+                        <a target="_blank" href="{{ route('admin.posts.create') }}">
+                            Create Post
+                        </a>
+
+                    </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
