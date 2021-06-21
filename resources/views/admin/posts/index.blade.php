@@ -5,6 +5,14 @@
 
         <h1>OUR POSTS</h1>
 
+        @if (session('deleted'))
+        <div class="alert alert-success">
+            <span>{{ session('deleted') }}</span>
+             ELIMINATO
+        </div>
+            
+        @endif
+
         <table class="table">
             <thead>
                 <tr>
@@ -26,7 +34,14 @@
                         <a class="btn btn-primary"
                         href="{{ route('admin.posts.edit', $post->id) }}">EDIT</a>
                     </td>
-                    <td>DELETE</td>
+                    <td>
+                        <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">DELETE</button>
+                        </form>
+
+                    </td>
                 </tr>
                     
                 @endforeach
