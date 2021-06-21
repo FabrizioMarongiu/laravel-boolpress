@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -82,9 +83,12 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        if($post){
+            return view('admin.posts.edit', compact('post'));
+        }
+        abort(404);
     }
 
     /**
@@ -96,7 +100,25 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+
+        $post = Post::find($id);
+
+        if($data['title'] != $post->title){
+            $data['slug'] = Str::slug($data['title'], '-');
+        }
+
+        $request->validate([
+            'title' => [
+                'required',
+                Rule::unique('posts')->ignore($id),
+            ],
+            'content' => 'required',
+        ]);
+
+        $post->update($data);
+
+        return redirect()->route('admin.posts.show', $post->id);
     }
 
     /**
