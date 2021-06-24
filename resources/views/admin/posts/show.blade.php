@@ -15,6 +15,13 @@
         </div>
 
         <div>{{ $post->content }}</div>
+
+        @if(count($post->tags) > 0)
+            <h4>Tags</h4>
+            @foreach ($post->tags as $tag)
+                <span class="badge badge-primary"> {{ $tag->name }} </span>
+            @endforeach
+        @endif
     </div>
 
 @endsection

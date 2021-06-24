@@ -49,7 +49,8 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|unique:posts',
             'content' => 'required',
-            'category_id' => 'nullable|exists:categories,id'
+            'category_id' => 'nullable|exists:categories,id',
+            'tags' => 'nullable|exists:tags,id'
         ]);
 
 
@@ -62,6 +63,11 @@ class PostController extends Controller
         $post->fill($data);
 
         $post->save();
+
+        //salvare relazioni nella tabella pivot
+        if(array_key_exists('tags', $data)){
+            $post->tags()->attach($data['tags']);
+        }
 
         return redirect()->route('admin.posts.show', $post->id);
     }
@@ -92,8 +98,10 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
+        $tags = Tag::all();
+
         if($post){
-            return view('admin.posts.edit', compact('post', 'categories'));
+            return view('admin.posts.edit', compact('post', 'categories', 'tags'));
         }
         abort(404);
     }
@@ -120,11 +128,19 @@ class PostController extends Controller
                 'required',
                 Rule::unique('posts')->ignore($id),
             ],
+            'tags' => 'nullable|exists:tags,id',
             'content' => 'required',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $post->update($data);
+
+        // AGGIORNA RELAZIONE TABELLA PIVOT
+        if(array_key_exists('tags', $data)){
+            $post->tags()->sync($data['tags']);
+        }else{
+            $post->tags()->detach();
+        }
 
         return redirect()->route('admin.posts.show', $post->id);
     }
@@ -139,7 +155,12 @@ class PostController extends Controller
     {
         $data = Post::find($id);
 
+        //PULIZIA ORFANI TABELLA PIVOT
+        $data->tags()->detach();
+        
         $data->delete();
+
+        
 
         return redirect()->route('admin.posts.index')->with('deleted', $data->title);
     }

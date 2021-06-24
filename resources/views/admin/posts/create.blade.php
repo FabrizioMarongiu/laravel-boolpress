@@ -56,6 +56,11 @@
                     </label>
                 </span>
             @endforeach
+            @error('tags')
+                <div>
+                    {{$message}}
+                </div>
+            @enderror
         </div>
 
 
