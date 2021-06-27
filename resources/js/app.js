@@ -42,6 +42,6 @@ import router from './routes';
 
 const root = new Vue({
     el: '#root',
-    router,
+    router: router,
     render: h => h(App)
 });
